@@ -41,9 +41,6 @@ fs = 8000
 ahh, _ = librosa.load("ahh_without_silences_8k.wav", sr=fs)
 shh, _ = librosa.load("shh_without_silences_8k.wav", sr=fs)
 
-#plt.plot(ahh[0:100])
-#plt.show()
-
 # esto es para una ventana
 L = 10
 K = 5
