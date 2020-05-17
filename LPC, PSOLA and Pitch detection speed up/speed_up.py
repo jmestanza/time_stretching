@@ -2,10 +2,11 @@ import librosa
 import os
 from detect_pitch import get_fundamental_frequency
 from modified_psola import modified_psola
+import scipy
 
 fs = 8000
 
-os.chdir("../data")
+os.chdir("input")
 
 audio_file = "ahh_without_silences_8k_norm"
 ahh, _ = librosa.load(audio_file+".wav", sr=fs)
@@ -24,10 +25,17 @@ samples = int(T * fs)
 L = samples//4
 K = L
 
-f0, sample_f0 = get_fundamental_frequency(ahh,K,L,fs)
+a = librosa.lpc(ahh, 12)
+e_ = scipy.signal.lfilter(a,[1], ahh) # obtenemos la senial error a traves del filtrado
+
+f0,sample_f0 = get_fundamental_frequency(e_,K,L,fs)
+
+
 print("Frecuencia fundamental : ",f0," ", sample_f0)
 speed = 1
-new_audio = modified_psola(ahh,sample_f0, speed)
+error_audio = modified_psola(e_,sample_f0, speed)
+
+new_audio = scipy.signal.lfilter([1],a, error_audio)
 
 os.chdir("../output")
-librosa.output.write_wav(audio_file+f"_speed_x{speed}.wav", new_audio, fs)
+librosa.output.write_wav("e_"+audio_file+f"_speed_x{speed}.wav", new_audio, fs)
