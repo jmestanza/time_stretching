@@ -1,12 +1,11 @@
 import librosa 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
-
-from DetectPitch import *
-from PitchSynchronousOverlappAndAdd import *
+import os
+from detect_pitch import get_fundamental_frequency
+from modified_psola import modified_psola
 
 fs = 8000
+
+os.chdir("../data")
 
 audio_file = "ahh_without_silences_8k_norm"
 ahh, _ = librosa.load(audio_file+".wav", sr=fs)
@@ -27,6 +26,8 @@ K = L
 
 f0, sample_f0 = get_fundamental_frequency(ahh,K,L,fs)
 print("Frecuencia fundamental : ",f0," ", sample_f0)
-speed = 2
-new_audio = Modified_PSOLA(ahh,sample_f0, speed)
+speed = 1
+new_audio = modified_psola(ahh,sample_f0, speed)
+
+os.chdir("../output")
 librosa.output.write_wav(audio_file+f"_speed_x{speed}.wav", new_audio, fs)

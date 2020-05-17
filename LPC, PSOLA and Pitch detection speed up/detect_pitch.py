@@ -49,34 +49,35 @@ def process_window_amdf(x,K,L,window_type):
         cnt += 1
     return gamma
 
-
-def get_fundamental_frequency(audio,K,L,fs,hist_bins=150, w_type = "hamming"):
+def get_fundamental_frequency(audio,K,L,fs,hist_bins=150, w_type = "hamming", method = "mean" , show_demo = False):
     split_audio = get_samples_for_process(audio, K, L)
     min_f_arr = []
     min_f_sample_arr = []
-    #plotted = False
     for partition in split_audio:
-        g = process_window_amdf(partition, K, L, w_type)
-     #   if not plotted:
-     #       plot_AMDF_and_signal(partition,g)
-     #       plotted = True
-        
-        min_f_sample = np.argmin(g)
-        #min_f_sample = np.argmin(partition)
-        
-        if min_f_sample == 0:
+        amdf = process_window_amdf(partition, K, L, w_type)
+        if show_demo:
+            plot_AMDF_and_signal(partition,amdf)
+            show_demo = False
+
+        min_f_sample = np.argmin(amdf) # el minimo me da un indicio de las repeticiones
+
+        # fs / Muestras = f0_hat => si f0 = 50 Hz => Muestras = fs/50 , con mas muestras que eso, tengo menos freucencia  
+        # Me quedo con las muestras que esten en el rango de la voz [50,500Hz]
+
+        if min_f_sample > fs/50:  # antes decia ==0
             continue
         min_f = fs/min_f_sample # fs / Muestras = f0_hat
         if min_f > 500:
             continue
+
         min_f_arr.append(min_f)
         min_f_sample_arr.append(min_f_sample)
-        #print(min_f_sample)
 
-    hist, bin_edges = np.histogram(np.array(min_f_arr), bins=hist_bins)  
-    # con esta linea me quedo con el que mayor ocurrencias tuvo en el histograma
-    # (devuelvo la f0_hat en Hz np.float)
-    #return bin_edges[np.argmax(hist)]
-    return np.mean(np.array(min_f_arr)), int(np.mean(np.array(min_f_sample_arr)))
-
-
+    if method == "mean":
+        return np.mean(np.array(min_f_arr)), int(np.mean(np.array(min_f_sample_arr)))
+    elif method == "maxprobability":
+        hist, bin_edges = np.histogram(np.array(min_f_arr), bins=hist_bins)  
+        # me quedo con el que mayor ocurrencias tuvo en el histograma
+        return bin_edges[np.argmax(hist)] , np.argmax(hist)
+    else:
+        return None

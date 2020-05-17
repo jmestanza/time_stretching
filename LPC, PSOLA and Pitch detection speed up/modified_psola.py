@@ -16,7 +16,7 @@ def plot_peaks(x,peaks):
     plt.plot(np.zeros_like(x), "--", color="gray")
     plt.show()
 
-def Modified_PSOLA(x,pitch_samples, speed):
+def modified_psola(x,pitch_samples, speed):
     total_time = len(x)
     total_new_time = ceil(total_time*(1/speed))
     new_audio = np.zeros(total_new_time)
@@ -34,10 +34,9 @@ def Modified_PSOLA(x,pitch_samples, speed):
     
     pitch_centered_modified = []
     for i, centered in enumerate(pitch_centered):
-        if speed >= 1:    
-            # supongamos num == 2 y den == 1
+        if speed >= 1:    # funciona bien para x1,x2,x4, falta agregar lo demas
             num, den = speed.as_integer_ratio()
-            if i % num == 0: # solo agrego cada 2 samples
+            if den > i%num:
                 pitch_centered_modified.append(pitch_centered[i])
 
     for i, centered in enumerate(pitch_centered_modified):
