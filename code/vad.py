@@ -96,7 +96,7 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
 
 
 
-def get_vad_frames(frames):
+def get_vad_frames(frames, vad, fs):
   """ Parametro: lista de frames generados con frame_generator()
       Devuelve una lista speech con los frames sonoros, otra not_speech con los no-sonoros, y
       otra is_frame_speech para saber si el frame original es sonoro o no (True=sonoro) 
