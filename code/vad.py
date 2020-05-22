@@ -3,6 +3,61 @@ import webrtcvad
 import numpy as np
 
 
+def get_vad_frames(frames, vad, fs):
+  """ Parametro: lista de frames generados con frame_generator()
+      Devuelve lista speech con los frames sonoros concatenados, otra not_speech con los no-sonoros concatenados, y
+      y lista is_frame_speech para saber si el frame original es sonoro o no (True=sonoro) 
+  """
+  speech = list()
+  not_speech = list()
+  is_frame_speech = list()
+
+  for frame in frames:
+    if vad.is_speech(frame.bytes, fs):     #si el frame que analizo es sonoro
+      speech.append(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
+      is_frame_speech.append(True)
+    else:                                     #si el frame que analicé no era sonoro
+      not_speech.append(frame.bytes)                #lo guardo en lista de no-sonoros
+      is_frame_speech.append(False)
+
+  #paso a arreglos
+  for s in speech:
+    speech.extend(s)
+  speech = pcm2float(sig=np.array(speech))
+
+  for s in not_speech:
+    not_speech.extend(s)
+  not_speech = pcm2float(sig=np.array(not_speech))
+
+  return speech, not_speech, is_frame_speech
+
+
+
+def join_vad_frames(voiced, not_voiced, indexes):
+  """genera un arreglo con los tramos sonoros y no sonoros post psola treatment
+  voiced = lista con tramos sonoros
+  not_voiced = lista con tramos no-sonoros
+  indexes = lista detallando qué frame es sonoro y cuál no
+  
+  returns: array
+  """
+  audio = list()
+  for is_speech in indexes:
+    if is_speech == True:   #si el frame es sonoro
+      if(voiced):
+        audio.append(voiced[0].copy())
+        voiced.pop(0)
+    else:                   #si el frame no es sonoro lo anexo y lo borro
+      if(not_voiced):
+        audio.append(not_voiced[0].copy())
+        not_voiced.pop(0)
+
+  final = list()
+  for aud in audio:
+    final.extend(aud)
+
+  return final
+
 #https://github.com/mgeier/python-audio/blob/master/audio-files/utility.py
 def float2pcm(sig, dtype='int16'):
     """Convert floating point signal with a range from -1 to 1 to PCM.
@@ -94,50 +149,3 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
         timestamp += duration
         offset += n
 
-
-
-def get_vad_frames(frames, vad, fs):
-  """ Parametro: lista de frames generados con frame_generator()
-      Devuelve una lista speech con los frames sonoros, otra not_speech con los no-sonoros, y
-      otra is_frame_speech para saber si el frame original es sonoro o no (True=sonoro) 
-  """
-  speech = list()
-  not_speech = list()
-  is_frame_speech = list()
-
-  for frame in frames:
-    if vad.is_speech(frame.bytes, fs):     #si el frame que analizo es sonoro
-      speech.append(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
-      is_frame_speech.append(True)
-    else:                                     #si el frame que analicé no era sonoro
-      not_speech.append(frame.bytes)                #lo guardo en lista de no-sonoros
-      is_frame_speech.append(False)
-
-  return speech, not_speech, is_frame_speech
-
-
-
-def join_vad_frames(voiced, not_voiced, indexes):
-  """genera un arreglo con los tramos sonoros y no sonoros post psola treatment
-  voiced = lista con tramos sonoros
-  not_voiced = lista con tramos no-sonoros
-  indexes = lista detallando qué frame es sonoro y cuál no
-  
-  returns: array
-  """
-  audio = list()
-  for is_speech in indexes:
-    if is_speech == True:   #si el frame es sonoro
-      if(voiced):
-        audio.append(voiced[0].copy())
-        voiced.pop(0)
-    else:                   #si el frame no es sonoro lo anexo y lo borro
-      if(not_voiced):
-        audio.append(not_voiced[0].copy())
-        not_voiced.pop(0)
-
-  final = list()
-  for aud in audio:
-    final.extend(aud)
-
-  return final
