@@ -16,7 +16,7 @@ def plot_peaks(x,peaks):
     plt.plot(np.zeros_like(x), "--", color="gray")
     plt.show()
 
-def modified_psola(x,pitch_samples, speed, is_frame_speech):
+def modified_psola(x,pitch_samples, speed, is_frame_speech, frame_len):
     x = x[:len(is_frame_speech)]
     total_time = len(x)
     total_new_time = ceil(total_time*(1/speed))
@@ -44,4 +44,11 @@ def modified_psola(x,pitch_samples, speed, is_frame_speech):
         t_ = ceil(centered.t * (1/speed))
         if t_-pitch_samples>=0 and t_+pitch_samples <= len(new_audio) - 1: 
             new_audio[t_-pitch_samples:t_+pitch_samples+1] += centered.samples_windowed
+    
+    # me gustaria saber el indice de la ventana de 20ms
+    for i in range(len(x)):
+        if not is_frame_speech[i*frame_len]:
+          t_ = ceil(i*frame_len+frame_len//2 * (1/speed))
+          new_audio[t_-frame_len//2:t_+frame_len//2] += x[i*frame_len:i*frame_len+frame_len]
+
     return new_audio
