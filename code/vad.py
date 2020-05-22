@@ -5,6 +5,7 @@ import numpy as np
 
 def get_vad_frames(frames, vad, fs):
   """ Parametro: lista de frames generados con frame_generator()
+      
       Devuelve lista speech con los frames sonoros concatenados, otra not_speech con los no-sonoros concatenados, y
       y lista is_frame_speech para saber si el frame original es sonoro o no (True=sonoro) 
   """
@@ -15,9 +16,11 @@ def get_vad_frames(frames, vad, fs):
   for frame in frames:
     if vad.is_speech(frame.bytes, fs):     #si el frame que analizo es sonoro
       speech.extend(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
+      not_speech.extend(np.zeros(len(frame.bytes))) 
       is_frame_speech.append(True)
     else:                                     #si el frame que analicé no era sonoro
       not_speech.extend(frame.bytes)                #lo guardo en lista de no-sonoros
+      speech.extend(np.zeros(len(frame.bytes)))
       is_frame_speech.append(False)
 
   speech = pcm2float(sig=np.array(speech))
