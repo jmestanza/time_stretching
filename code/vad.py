@@ -14,19 +14,14 @@ def get_vad_frames(frames, vad, fs):
 
   for frame in frames:
     if vad.is_speech(frame.bytes, fs):     #si el frame que analizo es sonoro
-      speech.append(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
+      speech.extend(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
       is_frame_speech.append(True)
     else:                                     #si el frame que analicé no era sonoro
-      not_speech.append(frame.bytes)                #lo guardo en lista de no-sonoros
+      not_speech.extend(frame.bytes)                #lo guardo en lista de no-sonoros
       is_frame_speech.append(False)
 
-  #paso a arreglos
-  for s in speech:
-    speech.extend(s)
   speech = pcm2float(sig=np.array(speech))
 
-  for s in not_speech:
-    not_speech.extend(s)
   not_speech = pcm2float(sig=np.array(not_speech))
 
   return speech, not_speech, is_frame_speech
