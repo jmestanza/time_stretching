@@ -17,11 +17,13 @@ def get_vad_frames(frames, vad, fs):
     if vad.is_speech(frame.bytes, fs):     #si el frame que analizo es sonoro
       speech.extend(frame.bytes)                    #lo guardo en la lista correspondiente y actualizo el indice
       not_speech.extend(np.zeros(len(frame.bytes)).astype(np.int16)) 
-      is_frame_speech.append(True)
+      for i in range(len(frame.bytes)):
+        is_frame_speech.append(True)
     else:                                     #si el frame que analicé no era sonoro
       not_speech.extend(frame.bytes)                #lo guardo en lista de no-sonoros
       speech.extend(np.zeros(len(frame.bytes)).astype(np.int16)) 
-      is_frame_speech.append(False)
+      for i in range(len(frame.bytes)):
+        is_frame_speech.append(False)
 
   speech = pcm2float(sig=np.array(speech))
 

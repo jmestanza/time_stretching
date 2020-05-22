@@ -16,7 +16,8 @@ def plot_peaks(x,peaks):
     plt.plot(np.zeros_like(x), "--", color="gray")
     plt.show()
 
-def modified_psola(x,pitch_samples, speed):
+def modified_psola(x,pitch_samples, speed, is_frame_speech):
+    x = x[:len(is_frame_speech)]
     total_time = len(x)
     total_new_time = ceil(total_time*(1/speed))
     new_audio = np.zeros(total_new_time)
@@ -27,7 +28,7 @@ def modified_psola(x,pitch_samples, speed):
     pitch_centered = []
 
     for i,peak in enumerate(peaks):
-        if peak-pitch_samples>=0 and peak+pitch_samples <= len(x) - 1: 
+        if is_frame_speech[peak] and peak-pitch_samples>=0 and peak+pitch_samples <= len(x) - 1: 
             samples_windowed = x[peak-pitch_samples:peak+pitch_samples+1]*w
             pitch_centered.append(pitch_centered_segment(pitch_samples, peak, samples_windowed))
    
