@@ -96,7 +96,7 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
 
 
 
-def get_vad_frames(frames)
+def get_vad_frames(frames):
   """ Parametro: lista de frames generados con frame_generator()
       Devuelve una lista speech con los frames sonoros, otra not_speech con los no-sonoros, y
       otra is_frame_speech para saber si el frame original es sonoro o no (True=sonoro) 
@@ -117,7 +117,7 @@ def get_vad_frames(frames)
 
 
 
-def join_vad_frames(voiced, not_voiced, indexes)
+def join_vad_frames(voiced, not_voiced, indexes):
   """genera un arreglo con los tramos sonoros y no sonoros post psola treatment
   voiced = lista con tramos sonoros
   not_voiced = lista con tramos no-sonoros
