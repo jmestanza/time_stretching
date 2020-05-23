@@ -22,7 +22,7 @@ def modified_psola(x,pitch_samples, speed, is_frame_speech, frame_len):
     total_time = len(x)
     total_new_time = ceil(total_time*(1/speed))
     new_audio = np.zeros(total_new_time)
-    peaks, _ = find_peaks(x, height=0, distance = pitch_samplePAINTs-int(0.16*pitch_samples))
+    peaks, _ = find_peaks(x, height=0, distance = pitch_samples-int(0.16*pitch_samples))
     #plot_peaks(x,peaks) # debugging
     w = np.hamming(2*pitch_samples+1)
     
