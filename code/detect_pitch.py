@@ -23,10 +23,11 @@ def get_samples_for_process(audio, K, L):
     # ahora q tengo el shaped_audio, solo falta dividir en samples
     total_sz = 2*side_len+L
     cut_audios = np.zeros((middle_L_cnt,total_sz))
+    indexes = []
     for i in range(middle_L_cnt):
         cut_audios[i] = shaped_audio[i*L:i*L+total_sz]
+        indexes.append(side_len+i*L)
 
-    indexes = range(side_len,len(audio), L)
     return cut_audios, indexes
 
 def process_window_autocorrelation(x,K,L,window_type):
@@ -51,27 +52,32 @@ def process_window_autocorrelation(x,K,L,window_type):
         cnt += 1
     return gamma
 
-def get_fundamental_frequency(audio,K,L,fs,hist_bins=150, w_type = "hamming", show_demo = False):
+def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,hist_bins=150, w_type = "hamming", show_demo = False):
+    audio = audio[:len(is_frame_speech)]
     split_audio, indexes = get_samples_for_process(audio, K, L)
     f0s = []
     f0s_in_samples = []
-    for partition in split_audio:
+    for i, partition in enumerate(split_audio):
         autocorrelation = process_window_autocorrelation(partition, K, L, w_type)
         if show_demo:
             plot_autocorrelation_and_signal(partition,autocorrelation)
             show_demo = False
 
-        f0_hat_in_samples = np.argmax(autocorrelation) 
+        if is_frame_speech[indexes[i]]:
+            f0_hat_in_samples = np.argmax(autocorrelation) 
 
-        # fs / Muestras = f0_hat
+            # fs / Muestras = f0_hat
 
-        if f0_hat_in_samples > fs/50:  # antes decia ==0
-            continue
-        
-        f0_hat = fs/f0_hat_in_samples # fs / Muestras = f0_hat
+            if f0_hat_in_samples > fs/50:  # antes decia ==0
+                continue
+            
+            f0_hat = fs/f0_hat_in_samples # fs / Muestras = f0_hat
 
-        if f0_hat > 500:
-            continue
+            if f0_hat > 500:
+                continue
+        else:
+            f0_hat = 0
+            f0_hat_in_samples = 0
 
         f0s.append(f0_hat)
         f0s_in_samples.append(f0_hat_in_samples)
