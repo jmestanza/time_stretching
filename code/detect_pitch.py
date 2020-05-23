@@ -45,7 +45,7 @@ def process_window_amdf(x,K,L,window_type):
         x2_fixed = np.zeros(len(x1_fixed))
         x2_moving = x[cnt:cnt+K+L] * w2
         x2_fixed[cnt:cnt+K+L] = x2_moving # este se va moviendo
-        gamma.append(np.sum(np.abs(x1_fixed-x2_fixed)))
+        gamma.append(np.sum(np.abs(x1_fixed*x2_fixed)))
         cnt += 1
     return gamma
 
@@ -59,7 +59,7 @@ def get_fundamental_frequency(audio,K,L,fs,hist_bins=150, w_type = "hamming", me
             plot_AMDF_and_signal(partition,amdf)
             show_demo = False
 
-        min_f_sample = np.argmin(amdf) # el minimo me da un indicio de las repeticiones
+        min_f_sample = np.argmax(amdf) # el minimo me da un indicio de las repeticiones
 
         # fs / Muestras = f0_hat => si f0 = 50 Hz => Muestras = fs/50 , con mas muestras que eso, tengo menos freucencia  
         # Me quedo con las muestras que esten en el rango de la voz [50,500Hz]
