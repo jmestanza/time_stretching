@@ -29,7 +29,7 @@ def get_vad_frames(frames, vad, fs):
 
   not_speech = pcm2float(sig=np.array(not_speech))
 
-  return speech, not_speech, is_frame_speech, frame.bytes
+  return speech, not_speech, is_frame_speech, len(frame.bytes)
 
 
 
