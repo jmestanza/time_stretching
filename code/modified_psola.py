@@ -46,7 +46,7 @@ def find_max_probability_f0(reg_number,start,end,indexes,sample_f0):
     plt.show()
     return int(bin_edges[np.argmax(hist)])
 
-def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions):
+def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions, unvoiced_samples=360):
 
     x = x[:len(is_frame_speech)]
     total_time = len(x)
@@ -78,13 +78,13 @@ def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions):
 
     
         else:# si es no sonora
-            w_no_sonora = np.hamming(2*p_samples+1)
+            w_no_sonora = np.hamming(2*unvoiced_samples+1)
             for i in range(end-start):
-                t = start + i*p_samples + p_samples//2
+                t = start + i*unvoiced_samples + unvoiced_samples//2
                 t_ = ceil(t*(1/speed))
                 if speed >=1:
                     if den > i%num:
-                        if t-p_samples>=0 and t_+p_samples < len(new_audio):
-                            new_audio[t_-p_samples:t_+p_samples+1] += x[t-p_samples:t+p_samples+1]*w_no_sonora
+                        if t-unvoiced_samples>=0 and t_+unvoiced_samples < len(new_audio):
+                            new_audio[t_-unvoiced_samples:t_+unvoiced_samples+1] += x[t-unvoiced_samples:t+unvoiced_samples+1]*w_no_sonora
 
     return new_audio
