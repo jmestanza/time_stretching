@@ -73,12 +73,13 @@ def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, f
                     new_audio[t_-centered.pitch:t_+centered.pitch+1] += centered.samples_windowed
 
     #aca con no pitch
-    for i in range(0,len(x)):
-        if i*frame_len < len(x):
+    for i in range(0,len(new_audio)):
+        if i*frame_len < len(new_audio):
             if not is_frame_speech[i*frame_len]:
                 if speed >=1:
                     if den > i%num:
                         t_ = ceil(i*frame_len+frame_len//2 * (1/speed))
-                        new_audio[t_-frame_len//2:t_+frame_len//2] += x[i*frame_len:i*frame_len+frame_len]
+                        if t_-frame_len//2 >0 and t_+frame_len//2 < len(new_audio):
+                            new_audio[t_-frame_len//2:t_+frame_len//2] += x[i*frame_len:i*frame_len+frame_len]
 
     return new_audio
