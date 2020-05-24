@@ -52,34 +52,20 @@ def process_window_autocorrelation(x,K,L,window_type):
         cnt += 1
     return gamma
 
-def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,hist_bins=150, w_type = "hamming", show_demo = False):
+def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hamming", show_demo = False):
     audio = audio[:len(is_frame_speech)]
     split_audio, indexes = get_samples_for_process(audio, K, L)
-    f0s = []
     f0s_in_samples = []
     for i, partition in enumerate(split_audio):
         autocorrelation = process_window_autocorrelation(partition, K, L, w_type)
         if show_demo:
             plot_autocorrelation_and_signal(partition,autocorrelation)
             show_demo = False
-
         if is_frame_speech[indexes[i]]:
+            # puede que esto valga 0 en algun momento, cuidado
             f0_hat_in_samples = np.argmax(autocorrelation) 
-
-            # fs / Muestras = f0_hat
-
-            if f0_hat_in_samples > fs/50:  # antes decia ==0
-                continue
-            
-            f0_hat = fs/f0_hat_in_samples # fs / Muestras = f0_hat
-
-            if f0_hat > 500:
-                continue
-        else:
-            f0_hat = 0
+        else:# si no es sonoro, lo computo como 0
             f0_hat_in_samples = 0
-
-        f0s.append(f0_hat)
         f0s_in_samples.append(f0_hat_in_samples)
 
-    return indexes, f0s, f0s_in_samples
+    return indexes, f0s_in_samples
