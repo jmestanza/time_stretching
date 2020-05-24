@@ -33,7 +33,7 @@ def search_pitch_samples(peak,indexes):
     return b
             
 
-def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, frame_len, regions):
+def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, frame_len):
 
     x = x[:len(is_frame_speech)]
     total_time = len(x)
@@ -73,28 +73,15 @@ def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, f
                     new_audio[t_-centered.pitch:t_+centered.pitch+1] += centered.samples_windowed
 
     #aca con no pitch
-    
-    # for i in range(0,len(new_audio)):
-    #     if (i*frame_len//2) < len(new_audio):
-    #         if not is_frame_speech[(i*frame_len//2)]:
-    #             if speed >=1:
-    #                 if den > i%num:
-    #                     t = i*frame_len+frame_len//2
-    #                     t_ = ceil(t* (1/speed))
-    #                     if t_-frame_len >0 and t_+frame_len < len(new_audio):
-    #                         new_audio[t_-frame_len:t_+frame_len+1] += x[t-frame_len:t+frame_len+1]*w_no_sonora
-    
-    #w_no_sonora = np.hamming(2*frame_len+1)
-    w_no_sonora = np.hamming(2*p_samples+1)
-    for reg in regions:
-      start,end = reg
-      if not is_frame_speech[start]:
-        for i in range(end-start):
-          t = start + i*p_samples + p_samples//2
-          t_ = ceil(t*(1/speed))
-          if speed >=1:
-            if den > i%num:
-              if t-p_samples>=0 and t_+p_samples < len(new_audio):
-                new_audio[t_-p_samples:t_+p_samples+1] += x[t-p_samples:t+p_samples+1]*w_no_sonora
+    w_no_sonora = np.hamming(2*frame_len+1)
+    for i in range(0,len(new_audio)):
+        if i*frame_len < len(new_audio):
+            if not is_frame_speech[i*frame_len]:
+                if speed >=1:
+                    if den > i%num:
+                        t = i*frame_len+frame_len//2
+                        t_ = ceil(t* (1/speed))
+                        if t_-frame_len >0 and t_+frame_len < len(new_audio):
+                            new_audio[t_-frame_len:t_+frame_len+1] += x[t-frame_len:t+frame_len+1]*w_no_sonora
 
     return new_audio
