@@ -33,7 +33,7 @@ def search_pitch_samples(peak,indexes):
     return b
             
 
-def find_max_probability_f0(start,end,indexes,sample_f0):
+def find_max_probability_f0(reg_number,start,end,indexes,sample_f0):
     f0s_in_reg = []
     for i,idx in enumerate(indexes):
         if start<= idx and idx <= end:
@@ -41,11 +41,12 @@ def find_max_probability_f0(start,end,indexes,sample_f0):
             f0s_in_reg.append(sample_f0[i])
     hist, bin_edges = np.histogram(np.array(f0s_in_reg), bins=150) 
     plt.plot(hist)    
+    plt.xlabel("Distribucion de f0_hat en samples")
+    plt.ylabel("Frecuencia")
     plt.show()
-    print("retorno: ",bin_edges[np.argmax(hist)])
     return int(bin_edges[np.argmax(hist)])
 
-def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, frame_len, regions):
+def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions):
 
     x = x[:len(is_frame_speech)]
     total_time = len(x)
@@ -54,17 +55,16 @@ def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, f
 
     num, den = speed.as_integer_ratio() # 3 / 2 = > num 3 , den 2 ;  4 1 
 
-    for reg in regions:
+    for reg_number, reg in enumerate(regions):
         start,end = reg
         if is_frame_speech[start]:
-            print("Procesando la parte sonora...")
-            p_samples = find_max_probability_f0(start,end,indexes,f0_in_samples)
+            p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
             print(p_samples)
             peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*0.16)
             w_sonora = np.hamming(2*p_samples+1)
             pitch_centered = []
             for i,peak in enumerate(peaks):
-                if peak <= start and peak <= end:
+                if start <= peak and peak <= end:
                     if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
                         samples_windowed = x[peak-p_samples:peak+p_samples+1]*w_sonora
                         pitch_centered.append(pitch_centered_segment(p_samples, peak, samples_windowed))
@@ -74,10 +74,8 @@ def modified_psola(x, min_dist, indexes,f0_in_samples, speed, is_frame_speech, f
                 if t_-centered.pitch>=0 and t_+centered.pitch <= len(new_audio) - 1: 
                     if speed>=1:
                         if den > i%num: #  
-                            print("aniadiendo a new_audio")
                             new_audio[t_-centered.pitch:t_+centered.pitch+1] += centered.samples_windowed
 
-            print("Termine de procesar la parte sonora...")
     
         else:# si es no sonora
             w_no_sonora = np.hamming(2*p_samples+1)
