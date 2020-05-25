@@ -1,0 +1,4 @@
+- No funciona bien si actualizo t_ y agrego una distancia cte
+(hay como discontinuidades, saltos de fase)
+- Suena medio robotico el 1.5 si dejo fijo t_ inicial y distancia cte
+- Suena bien con t_ actualizado cada 3 y distancia no fija 
