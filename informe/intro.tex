@@ -1,0 +1,64 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+
+\begin{abstract}
+Se ecualizó una señal en un enlace digital basándose en el 
+esquema de filtrado de inversión de sistemas. Se implementaron 
+NLMS y RLS, justificando la elección de los parámetros, consiguiendo
+minimizar el bit error rate, la tasa de errores.
+esquema de filtrado de inversión de sistemas. Se implementó
+NLMS, justificando la elección de los parámetros, consiguiendo
+minimizar el bit error rate, la tasa de errores. Luego se buscó de manera exitosa 
+implementar RLS, consiguiendo aún mejores resultados para el problema.
+
+\end{abstract}
+
+
+\section{Introducción}
+Se buscó ecualizar una señal en un enlace digital de comunicaciones. 
+Los datos consistían en una secuencia de datos pseudoaleatoria 
+codificada por Manchester, muestreada a una frecuencia de sampleo
+ de 4 kHz a razón de 250 bps. Ante estas características, cada bit consiste de 
+ 16 muestras según la codificación mencionada. El canal, en este caso, conocido, 
+ modificaba la señal dependiendo del posicionamiento
+ aleatorio de dos pares de polos conjugados. En lo que respecta a estacionaridad, 
+ el canal carece de la misma debido a sus características cambiantes en el tiempo.
+La principal dificultad consistía entonces en la variabilidad del canal. En las 
+siguientes figuras se puede notar el efecto de lo mencionado, siendo la 
+señal en azul los bits enviados y en naranja lo recibido. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{imagenes/1.jpeg}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{imagenes/2.jpeg}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{imagenes/3.jpeg}\\
+    \includegraphics[scale=0.5]{imagenes/4.jpeg}
+    \caption{Señales obtenidas en el receptor, al pasar por el canal.}
+\end{figure}
+
+El proyecto consiste en aplicar un algoritmo de filtrado adaptativo
+ para recuperar la señal transmitida asumiendo que no se conoce la entrada, 
+ lo que simularía un enlace digital de comunicaciones.
+ Un esquema de lo mencionado
+se puede ver en la siguiente figura.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{imagenes/preblock.png}
+    \caption{Esquema del enlace digital.}
+\end{figure}
+
+Como criterio de validación del algoritmo como así de sus parámetros, se calculó el bit error rate (BER), la
+cantidad de bits errados por unidad de tiempo.
+
+
+
+\end{document}
