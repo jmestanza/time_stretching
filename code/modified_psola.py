@@ -46,7 +46,7 @@ def find_max_probability_f0(reg_number,start,end,indexes,sample_f0):
     plt.show()
     return int(bin_edges[np.argmax(hist)])
 
-def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions, unvoiced_samples=360):
+def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, regions, unvoiced_samples=360):
 
     x = x[:len(is_frame_speech)]
     total_time = len(x)
@@ -62,7 +62,7 @@ def modified_psola(x, indexes, f0_in_samples, speed, is_frame_speech, regions, u
             cnt_no_descartados = 0
             p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
             print(p_samples)
-            peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*0.16)
+            peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*percent)
             w_sonora = np.hamming(2*p_samples+1)
             pitch_centered = []
             for i,peak in enumerate(peaks):
