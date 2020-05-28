@@ -148,7 +148,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                 unvoiced_centered.append(pitch_centered_segment(leap,t,curr_w*w_n_s))
                 i += 1
 
-            for unv_cent in unvoiced_centered: 
+            for i,unv_cent in enumerate(unvoiced_centered): 
                 t_ = ceil(unv_cent.t*(1/speed))
                 if speed == 1.0 or speed == 2.0 or speed == 4.0:
                     if den > i%num:
