@@ -79,8 +79,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
             if pitch_version == "pitch_cte": # pitch cte
                 is_first_time = True
                 p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
-                print(p_samples)
-
+    
                 peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*percent)
                 w_sonora = np.hanning(2*p_samples+1)
                 pitch_centered = []
@@ -132,7 +131,6 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                                 new_audio[curr_t_shifted-centered.pitch:curr_t_shifted+centered.pitch+1] += centered.samples_windowed
     
         else:# si es no sonora
-            print("Estoy en un frame de no speech")
             w_no_sonora = np.hanning(2*unvoiced_samples+1)
             for i in range(end-start):
                 t = start + i*unvoiced_samples + unvoiced_samples//2
