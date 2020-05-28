@@ -139,8 +139,9 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
             leap = unvoiced_samples
             unvoiced_centered = []
             right_lim = start
-            while right_lim  < end: 
-                t = start + i*leap*2 + 1
+            while right_lim  < end:
+                middle = leap 
+                t = start + middle + i*leap
                 right_lim = t + leap
                 curr_w = x[t - leap : t + leap + 1]
                 w_n_s = np.hanning(len(curr_w))
@@ -149,7 +150,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
 
             for unv_cent in unvoiced_centered: 
                 t_ = ceil(unv_cent.t*(1/speed))
-                if speed == 1 or speed == 2 or speed == 4:
+                if speed == 1.0 or speed == 2.0 or speed == 4.0:
                     if den > i%num:
                         if t_-unv_cent.pitch>=0 and t_+unv_cent.pitch < len(new_audio):
                                 new_audio[t_-unv_cent.pitch:t_+unv_cent.pitch+1] += unv_cent.samples_windowed
@@ -168,6 +169,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                         curr_t_shifted = curr_t_+ distance 
                         if curr_t_shifted-unv_cent.pitch>= 0 and curr_t_shifted+unv_cent.pitch < len(new_audio):
                             new_audio[curr_t_shifted-unv_cent.pitch:curr_t_shifted+unv_cent.pitch+1] += unv_cent.samples_windowed
+                            unvoiced_zones.append([t_-unv_cent.pitch,t_+unv_cent.pitch])
 
                     # if i%num == 0: # si es 1.5 => 3, 2 
                     #     curr_t_ = t_ # cada 3 actualizo el t_
