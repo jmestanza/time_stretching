@@ -6,7 +6,7 @@ import matplotlib.patches as mpatches
 import librosa 
 import scipy
 import numpy as np
-from math import ceil 
+from math import ceil,floor 
 import webrtcvad
 
 def plot_voiced_regs(regions, is_frame_speech, audio_f):
