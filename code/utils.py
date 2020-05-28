@@ -113,7 +113,7 @@ def get_K_and_L(T,fs):
     print("periodicidad minima que se puede estimar",fs/K, "Hz")
     return K, L 
 
-def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice, speed,normalize = False, fill_with_zeros= False):
+def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, speed,normalize = False, fill_with_zeros= False):
     if normalize:
      audio_original = librosa.util.normalize(audio_original)
      audio_procesado = librosa.util.normalize(audio_procesado)
