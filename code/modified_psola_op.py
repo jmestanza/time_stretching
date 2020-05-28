@@ -46,7 +46,7 @@ def find_max_probability_f0(reg_number,start,end,indexes,sample_f0):
     #plt.show()
     return int(bin_edges[np.argmax(hist)])
 
-def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, regions,pitch_version, pitch_dif_mode,unvoiced_samples=360):
+def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_frame_speech, regions,pitch_version, pitch_dif_mode,unvoiced_samples=360):
 
     x = x[:len(is_frame_speech)]
     total_time = len(x)
@@ -69,6 +69,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                     if start <= peak and peak <= end:
                         f0_idx = search_pitch_samples(peak, indexes) # busco cuanto pitch tiene este peak
                         curr_pitch = f0_in_samples[f0_idx]
+                        curr_pitch = int(curr_pitch*percent_pitch)
                         w_sonora = np.hanning(2*curr_pitch+1)
                         if peak-curr_pitch>=0 and peak+curr_pitch <= len(x) - 1: 
                             samples_windowed = x[peak-curr_pitch:peak+curr_pitch+1]*w_sonora
@@ -79,7 +80,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
             if pitch_version == "pitch_cte": # pitch cte
                 is_first_time = True
                 p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
-    
+                p_samples = int(percent_pitch*p_samples) 
                 peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*percent)
                 w_sonora = np.hanning(2*p_samples+1)
                 
