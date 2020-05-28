@@ -6,7 +6,7 @@ import matplotlib.patches as mpatches
 import librosa 
 import scipy
 import numpy as np
-from math import ceil,floor 
+import math
 import webrtcvad
 
 def plot_voiced_regs(regions, is_frame_speech, audio_f):
@@ -93,10 +93,11 @@ def get_regions_in_new_time(regions,speed, mode):
             new_start = 0
         else:  # sino empieza en el anterior final + 1
             new_start = last_end + 1
+            
         if mode == "ceil":
-            new_end = ceil(end*(1/speed))
+            new_end = math.ceil(end*(1/speed))
         elif mode == "floor":
-            new_end = floor(end*(1/speed))
+            new_end = math.floor(end*(1/speed))
         else:
             return None
 
