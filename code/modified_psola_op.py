@@ -140,7 +140,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
             unvoiced_centered = []
             right_lim = start
             while right_lim  < end: 
-                t = start + i*leap + 1
+                t = start + i*leap*2 + 1
                 right_lim = t + leap
                 curr_w = x[t - leap : t + leap + 1]
                 w_n_s = np.hanning(len(curr_w))
