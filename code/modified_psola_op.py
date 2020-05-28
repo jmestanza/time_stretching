@@ -138,7 +138,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
             i = 0
             leap = unvoiced_samples
             unvoiced_centered = []
-
+            right_lim = start
             while right_lim  < end: 
                 t = start + i*leap + 1
                 right_lim = t + leap
