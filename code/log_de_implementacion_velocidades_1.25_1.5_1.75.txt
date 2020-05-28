@@ -2,3 +2,21 @@
 (hay como discontinuidades, saltos de fase)
 - Suena medio robotico el 1.5 si dejo fijo t_ inicial y distancia cte
 - Suena bien con t_ actualizado cada 3 y distancia no fija 
+
+# nueva idea.
+# fijo el primer t_
+# distancia no fija.
+# En el caso que tengo 4 ventanas
+y tengo que descartar la 3ra
+calculaba t_
+shifteaba t_ + dist(pico1,pico2)
+
+y depsues 
+recalculaba t_ 
+y volvia a procesar.
+Ahora:
+calculo el primer t_
+shifteaba t_ + dist(pico1,pico2)
+
+la siguiente la defino como.
+primer t_ + dist(pico1,pico2) + dist(pico3,pico4)

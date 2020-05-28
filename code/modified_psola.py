@@ -80,13 +80,10 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                             new_audio[t_-centered.pitch:t_+centered.pitch+1] += centered.samples_windowed
 
                 elif speed == 1.25 or speed == 1.5 or speed == 1.75:
-
-                    if i%num == 0: # si es 1.5 => 3, 2 
+                    if is_first_time: # si es 1.5 => 3, 2 
                         curr_t_ = t_ # cada 3 actualizo el t_
-                        distance = 0 # reseteo la distancia
-
                     if den> i%num:
-                        if i%num == 0:
+                        if is_first_time:
                             distance = 0
                         else:
                             distance += pitch_centered[i].t - pitch_centered[i-1].t
@@ -94,6 +91,25 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                         curr_t_shifted = curr_t_+ distance 
                         if curr_t_shifted-centered.pitch>= 0 and curr_t_shifted+centered.pitch < len(new_audio):
                             new_audio[curr_t_shifted-centered.pitch:curr_t_shifted+centered.pitch+1] += centered.samples_windowed
+                    
+                    if is_first_time:
+                        is_first_time = False
+
+                    #CON FLANGEO:
+
+                    # if i%num == 0: # si es 1.5 => 3, 2 
+                    #     curr_t_ = t_ # cada 3 actualizo el t_
+                    #     distance = 0 # reseteo la distancia
+
+                    # if den> i%num:
+                    #     if i%num == 0:
+                    #         distance = 0
+                    #     else:
+                    #         distance += pitch_centered[i].t - pitch_centered[i-1].t
+
+                    #     curr_t_shifted = curr_t_+ distance 
+                    #     if curr_t_shifted-centered.pitch>= 0 and curr_t_shifted+centered.pitch < len(new_audio):
+                    #         new_audio[curr_t_shifted-centered.pitch:curr_t_shifted+centered.pitch+1] += centered.samples_windowed
     
         else:# si es no sonora
             w_no_sonora = np.hamming(2*unvoiced_samples+1)
