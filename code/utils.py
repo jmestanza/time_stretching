@@ -124,7 +124,7 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
             is_voice = np.hstack((is_voice,np.zeros(len(audio_original)-len(is_voice))))
             
     time = np.linspace(0, len(audio_original)//fs, len(audio_original))
-    fig = plt.figure(figsize=(15,5))
+    fig = plt.figure(figsize=(15,6))
     ax = fig.add_subplot(411)
     ax1 = fig.add_subplot(412)
     ax.set_title('Audio en inglés x{}'.format(speed))
