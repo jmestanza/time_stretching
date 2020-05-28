@@ -1,0 +1,8 @@
+Segun las imagenes modo 2 parece ser el camino
+Y pitch var consume menos energia
+
+bueno para pitch_var:
+2, pitchp 0.5
+
+"bueno" para pitch cte:
+2, pitchp 0.008
