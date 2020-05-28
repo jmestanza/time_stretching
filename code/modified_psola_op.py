@@ -164,7 +164,7 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                         if i%num == 0:
                             distance = 0
                         else:
-                            distance += unv_cent[i].t - unv_cent[i-1].t
+                            distance += unvoiced_centered[i].t - unvoiced_centered[i-1].t
 
                         curr_t_shifted = curr_t_+ distance 
                         if curr_t_shifted-unv_cent.pitch>= 0 and curr_t_shifted+unv_cent.pitch < len(new_audio):
