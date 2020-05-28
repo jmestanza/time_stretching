@@ -60,12 +60,11 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
     for reg_number, reg in enumerate(regions):
         start,end = reg
         if is_frame_speech[start]:
+            pitch_centered = []
             if pitch_version == "pitch_variable": # pitch variable
                 is_first_time = True
                 p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
                 peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*percent)
-                
-                pitch_centered = []
                 for i,peak in enumerate(peaks):
                     if start <= peak and peak <= end:
                         f0_idx = search_pitch_samples(peak, indexes) # busco cuanto pitch tiene este peak
@@ -82,7 +81,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
     
                 peaks, _ = find_peaks(x, height=0, distance = p_samples - p_samples*percent)
                 w_sonora = np.hanning(2*p_samples+1)
-                pitch_centered = []
+                
                 for i,peak in enumerate(peaks):
                     if start <= peak and peak <= end:
                         if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
