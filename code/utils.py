@@ -145,3 +145,18 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
     ax3.plot(time[:len(is_voice)],is_voice, "y")
     
     plt.show()
+
+def draw_windows(pz,w_number): # pitch/unvoiced-region and number of windows to plot
+    start_0 = pz[0][0] # start from first region
+    end_0 = pz[w_number][1]+1 # get to w_number right border
+    suma = np.zeros(end_0-start_0)
+    print(len(suma))
+    for reg in pz:
+        start,end = reg
+        if start_0 <= start and end <= end_0:
+            y = np.zeros(len(suma))
+            w = np.hanning(end-start)
+            y[start-start_0:end-start_0] = w
+            suma[start-start_0:end-start_0] += w
+            plt.plot(y,"r")
+    plt.plot(suma)
