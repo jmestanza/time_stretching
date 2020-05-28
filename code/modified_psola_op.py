@@ -133,23 +133,47 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                                 new_audio[curr_t_shifted-centered.pitch:curr_t_shifted+centered.pitch+1] += centered.samples_windowed
     
         else:# si es no sonora
-            w_no_sonora = np.hanning(2*unvoiced_samples+1)
-            for i in range(end-start):
-                t = start + i*unvoiced_samples + unvoiced_samples//2
-                t_ = ceil(t*(1/speed))
+            #w_no_sonora = np.hanning(2*unvoiced_samples+1)
+            #samp = int(end-start)
+            i = 0
+            leap = unvoiced_samples
+            unvoiced_centered = []
+
+            while right_lim  < end: 
+                t = start + i*leap + 1
+                right_lim = t + leap
+                curr_w = x[t - leap : t + leap + 1]
+                w_n_s = np.hanning(len(curr_w))
+                unvoiced_centered.append(pitch_centered_segment(leap,t,curr_w*w_n_s))
+                i += 1
+
+            for unv_cent in unvoiced_centered: 
+                t_ = ceil(unv_cent.t*(1/speed))
                 if speed == 1 or speed == 2 or speed == 4:
                     if den > i%num:
-                        if t-unvoiced_samples>=0 and t_+unvoiced_samples < len(new_audio):
-                            if t-unvoiced_samples >=0 and t+unvoiced_samples < len(x):
-                                new_audio[t_-unvoiced_samples:t_+unvoiced_samples+1] += x[t-unvoiced_samples:t+unvoiced_samples+1]*w_no_sonora
-                                unvoiced_zones.append([t_-unvoiced_samples,t_+unvoiced_samples])
+                        if t_-unv_cent.pitch>=0 and t_+unv_cent.pitch < len(new_audio):
+                                new_audio[t_-unv_cent.pitch:t_+unv_cent.pitch+1] += unv_cent.samples_windowed
+                                unvoiced_zones.append([t_-unv_cent.pitch,t_+unv_cent.pitch])
+
                 elif speed == 1.25 or speed == 1.5 or speed == 1.75:
                     if i%num == 0: # si es 1.5 => 3, 2 
-                        curr_t_ = t_ # cada 3 actualizo el t_
+                            curr_t_ = t_ # cada 3 actualizo el t_
+                            distance = 0 # reseteo la distancia
                     if den> i%num:
-                        curr_t_shifted = curr_t_+(i%num)*unvoiced_samples 
-                        if curr_t_shifted-unvoiced_samples>=0 and curr_t_shifted+unvoiced_samples < len(new_audio):
-                            if t-unvoiced_samples >=0 and t+unvoiced_samples < len(x):
-                                new_audio[curr_t_shifted-unvoiced_samples:curr_t_shifted+unvoiced_samples+1] += x[t-unvoiced_samples:t+unvoiced_samples+1]*w_no_sonora
-                                unvoiced_zones.append([curr_t_shifted-unvoiced_samples,curr_t_shifted+unvoiced_samples])
+                        if i%num == 0:
+                            distance = 0
+                        else:
+                            distance += unv_cent[i].t - unv_cent[i-1].t
+
+                        curr_t_shifted = curr_t_+ distance 
+                        if curr_t_shifted-unv_cent.pitch>= 0 and curr_t_shifted+unv_cent.pitch < len(new_audio):
+                            new_audio[curr_t_shifted-unv_cent.pitch:curr_t_shifted+unv_cent.pitch+1] += unv_cent.samples_windowed
+
+                    # if i%num == 0: # si es 1.5 => 3, 2 
+                    #     curr_t_ = t_ # cada 3 actualizo el t_
+                    # if den> i%num:
+                    #     curr_t_shifted = curr_t_+(i%num)*unvoiced_samples 
+                    #     if curr_t_shifted-unvoiced_samples>=0 and curr_t_shifted+unvoiced_samples < len(new_audio):
+                    #             new_audio[curr_t_shifted-unvoiced_samples:curr_t_shifted+unvoiced_samples+1] += unv_cent.samples_windowed
+                    #             unvoiced_zones.append([curr_t_shifted-unvoiced_samples,curr_t_shifted+unvoiced_samples])
     return new_audio, pitch_zones, unvoiced_zones
