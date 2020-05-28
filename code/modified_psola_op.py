@@ -73,6 +73,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                         if peak-curr_pitch>=0 and peak+curr_pitch <= len(x) - 1: 
                             samples_windowed = x[peak-curr_pitch:peak+curr_pitch+1]*w_sonora
                             pitch_centered.append(pitch_centered_segment(curr_pitch, peak, samples_windowed))
+                            pitch_zones.append([peak-curr_pitch,peak+curr_pitch])
                         
             #-ASI ESTABA ANTES CON FLANGE Y EL OTRO CAMBIO:
             if pitch_version == "pitch_cte": # pitch cte
@@ -87,6 +88,7 @@ def modified_psola(x, indexes, f0_in_samples, percent, speed, is_frame_speech, r
                         if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
                             samples_windowed = x[peak-p_samples:peak+p_samples+1]*w_sonora
                             pitch_centered.append(pitch_centered_segment(p_samples, peak, samples_windowed))
+                            pitch_zones.append([peak-p_samples,peak+p_samples])
 
             for i, centered in enumerate(pitch_centered):
                 t_ = ceil(centered.t * (1/speed))
