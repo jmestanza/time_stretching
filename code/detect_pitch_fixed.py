@@ -93,8 +93,8 @@ def get_f0_from_autocorr(x,show_demo):
     #print("primer pico grande en: ",first)
     #print("segundo pico grande en: ",second)
     # tecnicamente siempre seocnd deberia ser menor en altura que first
-    if(second > first):
-        print("paso algo raro")
+    # if(second > first):
+    #     print("paso algo raro")
     return abs(first-second)
 
 #print(heights)
