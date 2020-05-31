@@ -47,7 +47,7 @@ def process_window_autocorrelation(x,K,L,window_type):
     for cnt in range(K+2*L-1):
         x2_fixed = np.zeros(len(x1_fixed))
         x2_moving = x[cnt:cnt+K+L] * w2
-        x2_fixed[cnt:cnt+K+L] = x2_moving # este se va moviendo
+        x2_fixed[cnt:cnt+K+L] = np.flip(x2_moving) # este se va moviendo y como se muve hay que flipearlo
         gamma.append(np.sum(x1_fixed*x2_fixed))
         cnt += 1
     return gamma
