@@ -146,13 +146,12 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
     
     plt.show()
 
-def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title): # pitch/unvoiced-region and number of windows to plot
+def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title,cant_muestras): # pitch/unvoiced-region and number of windows to plot
     start_reg = regions[reg_num][0]
-    end_reg = regions[reg_num][1]
-    suma = np.zeros(end_reg-start_reg)
-    
+    end_reg = start_reg + cant_muestras#regions[reg_num][1]
     cnt = 0
     t = None
+    suma = np.zeros(end_reg-start_reg)
     for i,reg in enumerate(zones):
         start,end = reg
 
