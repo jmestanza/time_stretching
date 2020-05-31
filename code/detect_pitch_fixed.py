@@ -48,28 +48,25 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
     for reg in regions:
         start,end = reg
-        if is_frame_speech[start]:
-            i = 0
-            while (start+(i+1)*L + K <= end):
-                x1 = audio[start+i*L:start+(i+1)*L]
-                x2 = audio[start+i*L:start+(i+1)*L + K]
-                indexes.append(start+i*L)
-                split_audio.append([x1,x2])
-                i+=1
+        while (start+(i+1)*L + K <= end): # con esto no se sale de la region, no quiero casos borde
+            x1 = audio[start+i*L:start+(i+1)*L]
+            x2 = audio[start+i*L:start+(i+1)*L + K]
+            indexes.append(start+i*L)
+            split_audio.append([x1,x2])
+            i+=1
 
     f0s_in_samples = []
     for i, x1_and_x2 in enumerate(split_audio):
         x1,x2 = x1_and_x2
-        full_autocorr = process_window_autocorrelation(x1, x2, K,L,w_type)
 
-        autocorrelation = full_autocorr[len(full_autocorr)//2:]
-
-        if show_demo:
-            plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
-            
         if is_frame_speech[indexes[i]]:
+            full_autocorr = process_window_autocorrelation(x1, x2, K,L,w_type)
+            autocorrelation = full_autocorr[len(full_autocorr)//2:]
             # puede que esto valga 0 en algun momento, cuidado
-            f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo)#np.argmax(autocorrelation) 
+            f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo)#np.argmax(autocorrelation)
+            if show_demo:
+                plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
+         
         else:# si no es sonoro, lo computo como 0
             f0_hat_in_samples = 0
         f0s_in_samples.append(f0_hat_in_samples)
