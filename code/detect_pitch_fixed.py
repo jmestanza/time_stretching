@@ -2,6 +2,7 @@ import librosa
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import read
+from scipy.signal import find_peaks
 
 def plot_autocorrelation_and_signal(x1,x2,fullacorr,autocorr, figsize_=(10, 12)):
     plt.figure(figsize=figsize_)
@@ -71,10 +72,6 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
 
 
-import matplotlib.pyplot as plt
-from scipy.misc import electrocardiogram
-from scipy.signal import find_peaks
-x = electrocardiogram()[2000:4000]
 
 def get_f0_from_autocorr(x,show_demo):
     peaks, info = find_peaks(x, height=0)
