@@ -39,7 +39,7 @@ def process_window_autocorrelation(x1,x2,K,L,window_type):
 
     return np.convolve(x1*w1,x2*w2)
 
-def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning", show_demo = False,h=None,d=None,p=None,w=None,t=None, figsize=(10, 12)):
+def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,config_dict, w_type = "hanning", show_demo = False, figsize=(10, 12)):
     audio = audio[:len(is_frame_speech)]
     indexes = []
     split_audio = []
@@ -64,7 +64,7 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
             full_autocorr = process_window_autocorrelation(x1, x2, K,L,w_type)
             autocorrelation = full_autocorr[len(full_autocorr)//2:]
             # puede que esto valga 0 en algun momento, cuidado
-            f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo, h,d,p,w,t)#np.argmax(autocorrelation)
+            f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo, config_dict)#np.argmax(autocorrelation)
             if show_demo:
                 plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
          
@@ -78,9 +78,13 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
 
 
-def get_f0_from_autocorr(x,show_demo, h= 0, dist=16, prom = None, width = None, thresh = None):
+def get_f0_from_autocorr(x,show_demo, config_dict):
     
-    peaks, info = find_peaks(x, height=h, distance = dist, prominence= prom, width = None, threshold= thresh)
+    peaks, info = find_peaks(x, height=config_dict["height"],
+                                distance = config_dict["distance"],
+                                prominence= config_dict["prominence"],
+                                width = config_dict["width"],
+                                threshold= config_dict["threshold"])
 
     if show_demo:
         plt.plot(x)
