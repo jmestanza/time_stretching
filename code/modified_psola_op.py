@@ -46,7 +46,7 @@ def pitch_var_mode(start,end,indexes,f0_in_samples,x,peak_percent,percent_pitch)
     pitch_centered = []
     p_samples = find_max_probability_f0(start,end,indexes,f0_in_samples)
     peaks, _ = find_peaks(x[start:end+1], distance = p_samples - p_samples*peak_percent)
-    for i in range(peaks):
+    for i in range(len(peaks)):
         peaks[i] += start
     for i,peak in enumerate(peaks):
         if start <= peak and peak <= end:
@@ -62,7 +62,7 @@ def pitch_cte_mode(start,end,indexes,f0_in_samples,x,peak_percent,percent_pitch)
     pitch_centered = []
     p_samples = find_max_probability_f0(start,end,indexes,f0_in_samples)
     peaks, _ = find_peaks(x[start:end+1], distance = p_samples - p_samples*peak_percent)
-    for i in range(peaks):
+    for i in range(len(peaks)):
         peaks[i] += start
     new_p_samples = int(percent_pitch*p_samples) # cte
     w_sonora = np.hanning(2*new_p_samples+1)  # cte
