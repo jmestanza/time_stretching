@@ -87,8 +87,8 @@ def get_f0_from_autocorr(x,show_demo):
     arg_max1 = np.argmax(heights) # obtengo el mas grande
     first = peaks[arg_max1] # lo guardo
 
-    heights = np.delete(arg_max1) # borro de los demas picos
-    peaks = np.delete(arg_max1) # tmabien su indice
+    heights = np.delete(heights,arg_max1) # borro de los demas picos
+    peaks = np.delete(peaks,arg_max1) # tmabien su indice
 
     arg_max2 = np.argmax(heights) # busco el proximo mas grande
 
