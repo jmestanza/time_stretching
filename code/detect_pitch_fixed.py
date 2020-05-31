@@ -37,7 +37,7 @@ def process_window_autocorrelation(x1,x2,K,L,window_type):
         w1 = np.ones(L)
         w2 = np.ones(L+K) 
 
-    return np.convolve(x1*w1,x2*w2)
+    return np.correlate(x1*w1,x2*w2)
 
 def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,config_dict, w_type = "hanning", show_demo = False, figsize=(10, 12)):
     audio = audio[:len(is_frame_speech)]
