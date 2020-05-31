@@ -48,6 +48,7 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
     for reg in regions:
         start,end = reg
+        i = 0
         while (start+(i+1)*L + K <= end): # con esto no se sale de la region, no quiero casos borde
             x1 = audio[start+i*L:start+(i+1)*L]
             x2 = audio[start+i*L:start+(i+1)*L + K]
