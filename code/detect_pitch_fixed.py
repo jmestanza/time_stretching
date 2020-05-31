@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import read
 from scipy.signal import find_peaks
+from utils import separate_regions
 
 def plot_autocorrelation_and_signal(x1,x2,fullacorr,autocorr, figsize_=(10, 12)):
     plt.figure(figsize=figsize_)
@@ -42,13 +43,19 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
     audio = audio[:len(is_frame_speech)]
     indexes = []
     split_audio = []
-    for i in range(0,len(audio),L):
-        if(i+L+K< len(audio)):
-            x1 = audio[i:i+L]
-            x2 = audio[i:i+L+K]
-            indexes.append(i)
-            split_audio.append([x1,x2])
 
+    regions = separate_regions(is_frame_speech)
+
+    for reg in regions:
+        start,end = reg
+        if is_frame_speech[start]:
+            i = 0
+            while (start+(i+1)*L + K <= end):
+                x1 = audio[start+i*L:start+(i+1)*L]
+                x2 = audio[start+i*L:start+(i+1)*L + K]
+                indexes.append(start+i*L)
+                split_audio.append([x1,x2])
+                i+=1
 
     f0s_in_samples = []
     for i, x1_and_x2 in enumerate(split_audio):
