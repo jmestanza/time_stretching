@@ -65,16 +65,29 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                 is_first_time = True
                 p_samples = find_max_probability_f0(reg_number,start,end,indexes,f0_in_samples)
                 peaks, _ = find_peaks(x, distance = p_samples - p_samples*percent)
+                peaks.sort()
                 for i,peak in enumerate(peaks):
                     if start <= peak and peak <= end:
-                        f0_idx = search_pitch_samples(peak, indexes) # busco cuanto pitch tiene este peak
-                        curr_pitch = f0_in_samples[f0_idx]
-                        curr_pitch = int(curr_pitch*percent_pitch)
-                        w_sonora = np.hanning(2*curr_pitch+1)
-                        if peak-curr_pitch>=0 and peak+curr_pitch <= len(x) - 1: 
-                            samples_windowed = x[peak-curr_pitch:peak+curr_pitch+1]*w_sonora
-                            pitch_centered.append(pitch_centered_segment(curr_pitch, peak, samples_windowed))
-                            pitch_zones.append([peak-curr_pitch,peak+curr_pitch])
+                        if i == 0: 
+                            f0_idx = search_pitch_samples(peak, indexes) # busco cuanto pitch tiene este peak
+                            curr_pitch = f0_in_samples[f0_idx]
+                            curr_pitch = int(curr_pitch*percent_pitch)
+                            w_sonora = np.hanning(2*curr_pitch+1)
+                            if peak-curr_pitch>=0 and peak+curr_pitch <= len(x) - 1: 
+                                samples_windowed = x[peak-curr_pitch:peak+curr_pitch+1]*w_sonora
+                                pitch_centered.append(pitch_centered_segment(curr_pitch, peak, samples_windowed))
+                                pitch_zones.append([peak-curr_pitch,peak+curr_pitch])
+                        else:
+                            if (peaks[i] - peaks[i-1]) > (p_samples - p_samples* percent):
+                                f0_idx = search_pitch_samples(peak, indexes) # busco cuanto pitch tiene este peak
+                                curr_pitch = f0_in_samples[f0_idx]
+                                curr_pitch = int(curr_pitch*percent_pitch)
+                                w_sonora = np.hanning(2*curr_pitch+1)
+                                if peak-curr_pitch>=0 and peak+curr_pitch <= len(x) - 1: 
+                                    samples_windowed = x[peak-curr_pitch:peak+curr_pitch+1]*w_sonora
+                                    pitch_centered.append(pitch_centered_segment(curr_pitch, peak, samples_windowed))
+                                    pitch_zones.append([peak-curr_pitch,peak+curr_pitch])
+
                         
             #-ASI ESTABA ANTES CON FLANGE Y EL OTRO CAMBIO:
             if pitch_version == "pitch_cte": # pitch cte
@@ -83,13 +96,20 @@ def modified_psola(x, indexes, f0_in_samples, percent,percent_pitch, speed, is_f
                 p_samples = int(percent_pitch*p_samples) 
                 peaks, _ = find_peaks(x, distance = p_samples - p_samples*percent)
                 w_sonora = np.hanning(2*p_samples+1)
-                
+                peaks.sort()
                 for i,peak in enumerate(peaks):
                     if start <= peak and peak <= end:
-                        if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
-                            samples_windowed = x[peak-p_samples:peak+p_samples+1]*w_sonora
-                            pitch_centered.append(pitch_centered_segment(p_samples, peak, samples_windowed))
-                            pitch_zones.append([peak-p_samples,peak+p_samples])
+                        if i == 0:
+                            if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
+                                samples_windowed = x[peak-p_samples:peak+p_samples+1]*w_sonora
+                                pitch_centered.append(pitch_centered_segment(p_samples, peak, samples_windowed))
+                                pitch_zones.append([peak-p_samples,peak+p_samples])
+                        else:   
+                            if (peaks[i] - peaks[i-1]) > (p_samples - p_samples* percent):
+                                if peak-p_samples>=0 and peak+p_samples <= len(x) - 1: 
+                                    samples_windowed = x[peak-p_samples:peak+p_samples+1]*w_sonora
+                                    pitch_centered.append(pitch_centered_segment(p_samples, peak, samples_windowed))
+                                    pitch_zones.append([peak-p_samples,peak+p_samples])
 
             for i, centered in enumerate(pitch_centered):
                 t_ = ceil(centered.t * (1/speed))
