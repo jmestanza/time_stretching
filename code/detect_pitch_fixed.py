@@ -33,9 +33,9 @@ def get_samples_for_process(audio, K, L):
 def process_window_autocorrelation(x,K,L,window_type):
     if len(x) != (2*(K+L-1)+L):
         return None 
-    if window_type == "hamming":
-        w1 = np.hamming(L) # da muy bien con hamming!!
-        w2 = np.hamming(L+K)
+    if window_type == "hanning":
+        w1 = np.hanning(L) # da muy bien con hanning!!
+        w2 = np.hanning(L+K)
     elif window_type == "rectangular":
         w1 = np.ones(L)
         w2 = np.ones(L+K) 
@@ -52,12 +52,17 @@ def process_window_autocorrelation(x,K,L,window_type):
         cnt += 1
     return gamma
 
-def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hamming", show_demo = False):
+def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning", show_demo = False):
     audio = audio[:len(is_frame_speech)]
-    split_audio, indexes = get_samples_for_process(audio, K, L)
+    #split_audio, indexes = get_samples_for_process(audio, K, L)
+    split_audio, indexes = get_samples_for_process(audio,2*K,2*L)
+
     f0s_in_samples = []
     for i, partition in enumerate(split_audio):
-        autocorrelation = process_window_autocorrelation(partition, K, L, w_type)
+#        autocorrelation = process_window_autocorrelation(partition, K, L, w_type)
+        full_autocorr = process_window_autocorrelation(partition,2*K,2*L,w_type)
+        autocorrelation = full_autocorr[len(full_autocorr)//2:]
+
         if show_demo:
             plot_autocorrelation_and_signal(partition,autocorrelation)
             show_demo = False
@@ -69,3 +74,16 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hamming",
         f0s_in_samples.append(f0_hat_in_samples)
 
     return indexes, f0s_in_samples
+
+
+
+# x = np.ones(1000)
+
+# L = 50
+# K = 25
+# #cut_audios, indexes = get_samples_for_process(x,2*K,2*L)
+# full_autocorr = process_window_autocorrelation(cut_audios[0],2*K,2*L,"rectangular")
+# autocorr = full_autocorr[len(full_autocorr)//2:]
+# plt.plot(autocorr)
+# # mi K es K = 12.5
+# plt.show()
