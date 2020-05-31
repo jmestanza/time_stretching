@@ -151,15 +151,22 @@ def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title): # pitch/unv
     end_reg = regions[reg_num][1]
     suma = np.zeros(end_reg-start_reg)
     
+    cnt = 0
+    t = None
     for i,reg in enumerate(zones):
         start,end = reg
-        if start_reg <= start and end <= end_reg and i < cnt_ventanas:
+
+        if start_reg <= start and end <= end_reg and cnt < cnt_ventanas:
             y = np.zeros(len(suma))
             w = np.hanning(end-start)
             y[start-start_reg:end-end_reg] = w
             suma[start-start_reg:end-start_reg] += w
             t = [ el + start_reg for el in list(range(len(y)))]
             plt.plot(t,y,"r")
-    plt.plot(t,suma)
+            cnt += 1
+    if t != None:
+        plt.plot(t,suma)
+    else:
+        print("No se pudo plotear la suma")
     plt.title(title)
     plt.xlabel(xlabel)
