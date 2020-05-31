@@ -58,12 +58,46 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
         if show_demo:
             plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
-            show_demo = False
+            
         if is_frame_speech[indexes[i]]:
             # puede que esto valga 0 en algun momento, cuidado
-            f0_hat_in_samples = np.argmax(autocorrelation) 
+            f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo)#np.argmax(autocorrelation) 
         else:# si no es sonoro, lo computo como 0
             f0_hat_in_samples = 0
         f0s_in_samples.append(f0_hat_in_samples)
-
+        if show_demo:
+            show_demo = False
     return indexes, f0s_in_samples
+
+
+
+import matplotlib.pyplot as plt
+from scipy.misc import electrocardiogram
+from scipy.signal import find_peaks
+x = electrocardiogram()[2000:4000]
+
+def get_f0_from_autocorr(x,show_demo):
+    peaks, info = find_peaks(x, height=0)
+    if show_demo:
+        plt.plot(x)
+        plt.plot(peaks, x[peaks], "x")
+        plt.plot(np.zeros_like(x), "--", color="gray")
+        
+    heights = info['peak_heights']
+    arg_max1 = np.argmax(heights) # obtengo el mas grande
+    first = peaks[arg_max1] # lo guardo
+
+    heights = np.delete(arg_max1) # borro de los demas picos
+    peaks = np.delete(arg_max1) # tmabien su indice
+
+    arg_max2 = np.argmax(heights) # busco el proximo mas grande
+
+    second = peaks[arg_max2]
+    #print("primer pico grande en: ",first)
+    #print("segundo pico grande en: ",second)
+    # tecnicamente siempre seocnd deberia ser menor en altura que first
+    if(second > first):
+        print("paso algo raro")
+    return abs(first-second)
+
+#print(heights)
