@@ -43,6 +43,7 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,config_dict, w_type 
     audio = audio[:len(is_frame_speech)]
     indexes = []
     split_audio = []
+    new_indexes = []
 
     regions = separate_regions(is_frame_speech)
 
@@ -65,15 +66,19 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs,config_dict, w_type 
             autocorrelation = full_autocorr[len(full_autocorr)//2:]
             # puede que esto valga 0 en algun momento, cuidado
             f0_hat_in_samples = get_f0_from_autocorr(autocorrelation, show_demo, config_dict)#np.argmax(autocorrelation)
-            if show_demo:
-                plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
-         
+            if f0_hat_in_samples != None:
+                new_indexes.append(indexes[i])
+                if show_demo:
+                    plot_autocorrelation_and_signal(x1,x2,full_autocorr,autocorrelation, figsize_=figsize)
+            
         else:# si no es sonoro, lo computo como 0
             f0_hat_in_samples = 0
-        f0s_in_samples.append(f0_hat_in_samples)
+            new_indexes.append(indexes[i])
+        if f0_hat_in_samples != None:    
+            f0s_in_samples.append(f0_hat_in_samples)
         if show_demo:
             show_demo = False
-    return indexes, f0s_in_samples
+    return new_indexes, f0s_in_samples
 
 
 
@@ -91,16 +96,24 @@ def get_f0_from_autocorr(x,show_demo, config_dict):
         plt.plot(peaks, x[peaks], "x")
         plt.plot(np.zeros_like(x), "--", color="gray")
         
-    heights = info['peak_heights']
-    arg_max1 = np.argmax(heights) # obtengo el mas grande
-    first = peaks[arg_max1] # lo guardo
 
-    heights = np.delete(heights,arg_max1) # borro de los demas picos
-    peaks = np.delete(peaks,arg_max1) # tmabien su indice
 
-    arg_max2 = np.argmax(heights) # busco el proximo mas grande
+    #print(info)
+    #print(info["peak_heights"])
 
-    second = peaks[arg_max2]
+    try:
+        heights = info['peak_heights']
+        arg_max1 = np.argmax(heights) # obtengo el mas grande
+        first = peaks[arg_max1] # lo guardo
+
+        heights = np.delete(heights,arg_max1) # borro de los demas picos
+        peaks = np.delete(peaks,arg_max1) # tmabien su indice
+
+        arg_max2 = np.argmax(heights) # busco el proximo mas grande
+
+        second = peaks[arg_max2]
+    except:
+        return None
     #print("primer pico grande en: ",first)
     #print("segundo pico grande en: ",second)
     # tecnicamente siempre seocnd deberia ser menor en altura que first
