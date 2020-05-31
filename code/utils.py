@@ -162,4 +162,4 @@ def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title): # pitch/unv
             plt.plot(t,y,"r")
     plt.plot(t,suma)
     plt.title(title)
-    plt.set_xlabel(xlabel)
+    plt.xlabel(xlabel)
