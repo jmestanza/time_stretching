@@ -113,7 +113,7 @@ def get_K_and_L(T,fs):
     print("periodicidad minima que se puede estimar",fs/K, "Hz")
     return K, L 
 
-def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, speed,normalize = False, fill_with_zeros= False):
+def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, speed, figsize_ = (15,6),normalize = False, fill_with_zeros= False):
     if normalize:
      audio_original = librosa.util.normalize(audio_original)
      audio_procesado = librosa.util.normalize(audio_procesado)
@@ -124,7 +124,7 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
             is_voice = np.hstack((is_voice,np.zeros(len(audio_original)-len(is_voice))))
             
     time = np.linspace(0, len(audio_original)//fs, len(audio_original))
-    fig = plt.figure(figsize=(15,6))
+    fig = plt.figure(figsize=figsize_)
     ax = fig.add_subplot(411)
     ax1 = fig.add_subplot(412)
     ax.set_title('Audio en inglés x{}'.format(speed))
@@ -141,12 +141,14 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
 
     ax3 = fig.add_subplot(414)
     ax3.set_xlabel("tiempo (s)")
-    ax3.set_ylabel('unvoiced'.format(speed))
+    ax3.set_ylabel('is voiced'.format(speed))
     ax3.plot(time[:len(is_voice)],is_voice, "y")
     
     plt.show()
 
-def draw_windows(pz,w_number): # pitch/unvoiced-region and number of windows to plot
+def draw_windows(pz,regions,reg_num,w_number): # pitch/unvoiced-region and number of windows to plot
+
+    
     start_0 = pz[0][0] # start from first region
     end_0 = pz[w_number][1]+1 # get to w_number right border
     suma = np.zeros(end_0-start_0)
