@@ -78,8 +78,10 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
 
 
 
-def get_f0_from_autocorr(x,show_demo):
-    peaks, info = find_peaks(x, height=0)
+def get_f0_from_autocorr(x,show_demo, h= 0, dist=16, prom = None, width = None, thresh = None):
+    
+    peaks, info = find_peaks(x, height=h, distance = dist, prominence= prom, width = None, threshold= thresh)
+
     if show_demo:
         plt.plot(x)
         plt.plot(peaks, x[peaks], "x")
