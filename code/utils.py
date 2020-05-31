@@ -169,3 +169,32 @@ def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title,cant_muestras
         print("No se pudo plotear la suma")
     plt.title(title)
     plt.xlabel(xlabel)
+
+
+def lpc_filtering(regions_lpc, audio_f, audio_noised, coef_number): 
+    lpc_coeffs = []
+    error = []
+    for start, end in regions_lpc:
+        a = librosa.lpc(audio_noised[start:end], coef_number)
+        lpc_coeffs.append(a)
+        error.extend(scipy.signal.lfilter(a, [1], audio_f[start:end]))
+    error = np.array(error)
+    return error, lpc_coeffs
+
+def lpc_defiltering(regions_lpc,speed,voiced_filt,lpc_coeffs,psola_error):
+    sub_regions = get_regions_in_new_time(regions_lpc,speed, mode= "floor")
+    voiced_filt = []            
+
+    for i, sub_reg in enumerate(sub_regions):      
+        start, end = sub_reg
+        voiced_filt.extend(scipy.signal.lfilter([1], lpc_coeffs[i] , psola_error[start:end]))
+    voiced_filt = np.array(voiced_filt)
+
+    return voiced_filt
+
+def get_noise_for_lpc(audio_f,std = 0.001):
+    noise = np.random.normal(0, std, size=len(audio_f)) # media 0
+    return noise+audio_f 
+
+def plot_histogram(f0, bins_= 'auto'):
+    n, bins, patches = plt.hist(x=f0, bins_='auto', color='#0504aa', alpha=0.7, rwidth=0.85)
