@@ -181,7 +181,7 @@ def lpc_filtering(regions_lpc, audio_f, audio_noised, coef_number):
     error = np.array(error)
     return error, lpc_coeffs
 
-def lpc_defiltering(regions_lpc,speed,voiced_filt,lpc_coeffs,psola_error):
+def lpc_defiltering(regions_lpc,speed,lpc_coeffs,psola_error):
     sub_regions = get_regions_in_new_time(regions_lpc,speed, mode= "floor")
     voiced_filt = []            
 
