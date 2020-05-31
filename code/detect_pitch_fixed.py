@@ -42,9 +42,9 @@ def get_fundamental_frequency(audio, is_frame_speech,K,L,fs, w_type = "hanning",
     indexes = []
     split_audio = []
     for i in range(0,len(audio),L):
-        if(i-K//2 >= 0 and i+L+K//2< len(audio)):
+        if(i+L+K< len(audio)):
             x1 = audio[i:i+L]
-            x2 = audio[i-K//2:i+L+K//2]
+            x2 = audio[i:i+L+K]
             indexes.append(i)
             split_audio.append([x1,x2])
 
