@@ -1,5 +1,5 @@
-## Project: Speed up/slow down a voice signal
+## Project: Speed up a voice signal
 In this project we used:
 * Linear Predictive Coding (LPC)
-* Average magnitude difference function (AMDF)
+* modified short time autocorrelation
 * A modified version of TD-PSOLA (without changing pitch)
