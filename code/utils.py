@@ -113,7 +113,7 @@ def get_K_and_L(T,fs):
     print("periodicidad minima que se puede estimar",fs/K, "Hz")
     return K, L 
 
-def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, speed,normalize = False, fill_with_zeros= False):
+def plot_four_signals(title,audio_original,audio_procesado,error_psola,is_voice,fs, speed, figsize_ = (15,6),normalize = False, fill_with_zeros= False):
     if normalize:
      audio_original = librosa.util.normalize(audio_original)
      audio_procesado = librosa.util.normalize(audio_procesado)
@@ -124,10 +124,10 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
             is_voice = np.hstack((is_voice,np.zeros(len(audio_original)-len(is_voice))))
             
     time = np.linspace(0, len(audio_original)//fs, len(audio_original))
-    fig = plt.figure(figsize=(15,6))
+    fig = plt.figure(figsize=figsize_)
     ax = fig.add_subplot(411)
     ax1 = fig.add_subplot(412)
-    ax.set_title('Audio en inglés x{}'.format(speed))
+    ax.set_title(title+'x{}'.format(speed))
     ax.plot(time, audio_original, 'b') 
     ax1.plot(time[:len(audio_procesado)],audio_procesado, 'g')
     ax1.set_xlabel("tiempo (s)")
@@ -141,22 +141,60 @@ def plot_four_signals(audio_original,audio_procesado,error_psola,is_voice,fs, sp
 
     ax3 = fig.add_subplot(414)
     ax3.set_xlabel("tiempo (s)")
-    ax3.set_ylabel('unvoiced'.format(speed))
+    ax3.set_ylabel('is voiced'.format(speed))
     ax3.plot(time[:len(is_voice)],is_voice, "y")
     
     plt.show()
 
-def draw_windows(pz,w_number): # pitch/unvoiced-region and number of windows to plot
-    start_0 = pz[0][0] # start from first region
-    end_0 = pz[w_number][1]+1 # get to w_number right border
-    suma = np.zeros(end_0-start_0)
-    print(len(suma))
-    for reg in pz:
+def draw_windows(zones,regions,reg_num,cnt_ventanas, xlabel, title,cant_muestras): # pitch/unvoiced-region and number of windows to plot
+    start_reg = regions[reg_num][0]
+    end_reg = start_reg + cant_muestras#regions[reg_num][1]
+    cnt = 0
+    t = None
+    suma = np.zeros(end_reg-start_reg)
+    for i,reg in enumerate(zones):
         start,end = reg
-        if start_0 <= start and end <= end_0:
+
+        if start_reg <= start and end <= end_reg and cnt < cnt_ventanas:
             y = np.zeros(len(suma))
             w = np.hanning(end-start)
-            y[start-start_0:end-start_0] = w
-            suma[start-start_0:end-start_0] += w
-            plt.plot(y,"r")
-    plt.plot(suma)
+            y[start-start_reg:end-end_reg] = w
+            suma[start-start_reg:end-start_reg] += w
+            t = [ el + start_reg for el in list(range(len(y)))]
+            plt.plot(t,y,"r")
+            cnt += 1
+    if t != None:
+        plt.plot(t,suma)
+    else:
+        print("No se pudo plotear la suma")
+    plt.title(title)
+    plt.xlabel(xlabel)
+
+
+def lpc_filtering(regions_lpc, audio_f, audio_noised, coef_number): 
+    lpc_coeffs = []
+    error = []
+    for start, end in regions_lpc:
+        a = librosa.lpc(audio_noised[start:end], coef_number)
+        lpc_coeffs.append(a)
+        error.extend(scipy.signal.lfilter(a, [1], audio_f[start:end]))
+    error = np.array(error)
+    return error, lpc_coeffs
+
+def lpc_defiltering(regions_lpc,speed,lpc_coeffs,psola_error):
+    sub_regions = get_regions_in_new_time(regions_lpc,speed, mode= "floor")
+    voiced_filt = []            
+
+    for i, sub_reg in enumerate(sub_regions):      
+        start, end = sub_reg
+        voiced_filt.extend(scipy.signal.lfilter([1], lpc_coeffs[i] , psola_error[start:end]))
+    voiced_filt = np.array(voiced_filt)
+
+    return voiced_filt
+
+def get_noise_for_lpc(audio_f,std = 0.001):
+    noise = np.random.normal(0, std, size=len(audio_f)) # media 0
+    return noise+audio_f 
+
+def plot_histogram(f0, bins_= 'auto'):
+    n, bins, patches = plt.hist(x=f0, bins_='auto', color='#0504aa', alpha=0.7, rwidth=0.85)
